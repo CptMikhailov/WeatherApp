@@ -1,0 +1,32 @@
+@model WeatherApp.Models.WeatherForecast
+
+@if(Model != null)
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col" colspan="5"><h3>5 day forecast for @Model.City.Name</h3></th>
+            </tr>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col" colspan="2">Time</th>
+                <th scope="col">Temperature (°F)</th>
+                <th scope="col">Pressure (hPa)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.List)
+            {
+                var localDtg = item.GetLocalDateTime(Model.TimeZone);
+                var icon = item.WeatherIcon + ".png";
+                <tr>
+                    <th scope="row">@localDtg.Date.ToLongDateString()</th>
+                    <td>@localDtg.DateTime.ToShortTimeString()</td>
+                    <td><img src="http://openweathermap.org/img/wn/@icon"></td>
+                    <td>@item.Main.TempF.ToString("F1")</td>
+                    <td>@item.Main.Pressure.ToString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

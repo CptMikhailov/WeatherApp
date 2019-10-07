@@ -1,0 +1,56 @@
+@model WeatherModel
+@{
+    ViewData["Title"] = "Index";
+}
+<style type="text/css">
+    body { background: mediumaquamarine !important; }
+</style>
+<body>
+    <h2>Weather Forecast</h2>
+
+    <form id="search" asp-action="Search" method="get" class="form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group mx-sm-3 mb-2">
+            <label asp-for="@Model.RequestZip">ZIP Code</label>
+            <input asp-for="@Model.RequestZip" type="text" class="form-control" placeholder="ZIP Code" />
+            <span asp-validation-for="@Model.RequestZip" class="text-danger"></span>
+        </div>
+        <button type="submit" asp-controller="Weather" asp-action="Search" method="get" id="btnSearch" class="btn btn-primary mb-2">Search</button>
+    </form>
+    <br />
+    <div id="forecast"></div>
+</body>
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $('#search').on('submit', function(e) {
+            e.preventDefault();
+            $('#btnSearch').prop("disabled", true);
+            $('#btnSearch').empty();
+            $('#btnSearch').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />Loading...')
+            var queryString = 'query=' + $('#RequestZip').val();
+            var url = '/weather/search';
+            $('#forecast').empty();
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: queryString,
+                timeout: 2000,
+                complete: function() {
+                    $('#btnSearch').prop("disabled", false);
+                    $('#btnSearch').empty();
+                    $('#btnSearch').html('Search')
+                },
+                success: function(data) {
+                    $('#forecast').html(data).hide().fadeIn(400);
+                },
+                error: function() {
+                    $('#forecast').html('<span class="text-danger">Please try again soon.</span>');
+                }
+            });
+        });
+    </script>
+}
